@@ -10,21 +10,34 @@ import FirebaseAuth
 
 class AuthViewModel: ObservableObject {
     
-    @Published var user: User?
+    //@Published var user: User?
+    @Published var appUser: AppUser?
     @Published var email: String = ""
     @Published var password: String = ""
+    @Published var username: String = ""
     @Published var showRegister: Bool = false
     
     var isUserLoggedIn: Bool {
-        user != nil
+        appUser != nil
     }
     
+    private let userRepo = UserRepository()
     private let auth = Auth.auth()
     private var listener: NSObjectProtocol?
     
     init() {
         self.listener = auth.addStateDidChangeListener { auth, user in
-            self.user = user
+            //self.user = user
+            
+            guard let user else { return }
+            
+            Task {
+                do {
+                    self.appUser = try await self.userRepo.getUserByID(user.uid)
+                } catch {
+                    print(error)
+                }
+            }
         }
     }
     
@@ -38,13 +51,13 @@ class AuthViewModel: ObservableObject {
             print("No user found?")
             return
         }
-        self.user = user
+        //self.user = user
     }
     
     func logInWithEmail() {
         Task {
             do {
-                let authResult = try await auth.signIn(withEmail: email, password: password)
+                try await userRepo.loginWithEmail(email: email, password: password)
                 // Obsolete durch den listener
                 // self.user = authResult.user
             } catch {
@@ -56,7 +69,7 @@ class AuthViewModel: ObservableObject {
     func registerWithEmail() {
         Task {
             do {
-                let authResult = try await auth.createUser(withEmail: email, password: password)
+                try await userRepo.registerUserWithEmail(email: email, password: password, username: username)
                 // Obsolete durch den listener
                 // self.user = authResult.user
             } catch {

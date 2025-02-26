@@ -13,8 +13,10 @@ struct AppNavigation: View {
     
     var body: some View {
         VStack {
-            if let userID = authViewModel.user?.uid {
+            if let user = authViewModel.appUser, let userID = user.id {
                 Text(userID)
+                Text(user.email)
+                Text(user.username)
             }
             
             Button("Logout") {

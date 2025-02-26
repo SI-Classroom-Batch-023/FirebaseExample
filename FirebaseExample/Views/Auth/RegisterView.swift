@@ -18,6 +18,9 @@ struct RegisterView: View {
         SecureField("Password", text: $viewModel.password)
             .appTextFieldStyle()
         
+        TextField("Username", text: $viewModel.username)
+            .appTextFieldStyle()
+        
         Button("Register Email") {
             viewModel.registerWithEmail()
         }
