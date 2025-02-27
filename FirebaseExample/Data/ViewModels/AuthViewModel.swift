@@ -8,17 +8,18 @@
 import SwiftUI
 import FirebaseAuth
 
+@MainActor
 class AuthViewModel: ObservableObject {
     
-    //@Published var user: User?
-    @Published var appUser: AppUser?
+    @Published var user: User?
+    //@Published var appUser: AppUser?
     @Published var email: String = ""
     @Published var password: String = ""
     @Published var username: String = ""
     @Published var showRegister: Bool = false
     
     var isUserLoggedIn: Bool {
-        appUser != nil
+        user != nil
     }
     
     private let userRepo = UserRepository()
@@ -27,31 +28,12 @@ class AuthViewModel: ObservableObject {
     
     init() {
         self.listener = auth.addStateDidChangeListener { auth, user in
-            //self.user = user
-            
-            guard let user else { return }
-            
-            Task {
-                do {
-                    self.appUser = try await self.userRepo.getUserByID(user.uid)
-                } catch {
-                    print(error)
-                }
-            }
+            self.user = user
         }
     }
     
     deinit {
         listener = nil
-    }
-    
-    // Nicht im init als Beispiel weil der state did change listener drin ist.
-    func checkLogin() {
-        guard let user = auth.currentUser else {
-            print("No user found?")
-            return
-        }
-        //self.user = user
     }
     
     func logInWithEmail() {
@@ -95,10 +77,14 @@ class AuthViewModel: ObservableObject {
         auth.sendPasswordReset(withEmail: email)
     }
     
-    func logout() {
-        try? auth.signOut()
-        // Obsolete durch den listener
-        // self.user = nil
+    
+    // Nicht im init als Beispiel weil der state did change listener drin ist.
+    func checkLogin() {
+        guard let user = auth.currentUser else {
+            print("No user found?")
+            return
+        }
+        //self.user = user
     }
     
 }

@@ -14,7 +14,6 @@ struct AuthView: View {
     var body: some View {
         if viewModel.isUserLoggedIn {
             AppNavigation()
-                .environmentObject(viewModel)
         } else {
             if viewModel.showRegister {
                 RegisterView(viewModel: viewModel)

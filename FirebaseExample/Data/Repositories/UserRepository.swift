@@ -16,6 +16,53 @@ class UserRepository {
             .getDocument(as: AppUser.self)
     }
     
+    // Beispiel für die getUserByID als completion
+    private func getUserByID(_ id: String, completion: @escaping (AppUser) -> Void) {
+         userRef
+            .document(id)
+            .getDocument { snapshot, error in
+                if let error {
+                    print(error)
+                    return
+                }
+                
+                guard let snapshot else { return }
+                
+                do {
+                    let user = try snapshot.data(as: AppUser.self)
+                    completion(user)
+                } catch {
+                    print(error)
+                }
+            }
+    }
+    
+    // Beispiel für Aufruf der verschiedenen Varianten
+    private func test() {
+        Task {
+            do {
+                let user1 = try await getUserByID("123")
+                let user2 = try await getUserByID("1234")
+            } catch {
+                print(error)
+            }
+        }
+        
+        
+        getUserByID("123") { appUser in
+            let user1 = appUser
+            self.getUserByID("1234") { appUser2 in
+                let user2 = appUser2
+            }
+        }
+    }
+    
+    func updateUser(username: String) async throws {
+        guard let id = firebaseManager.userID else { return }
+        
+        try await userRef.document(id).updateData(["username": username])
+    }
+    
     func loginWithEmail(email: String, password: String) async throws {
         try await firebaseManager.auth.signIn(withEmail: email, password: password)
     }
@@ -26,5 +73,10 @@ class UserRepository {
         let appUser = AppUser(email: email, username: username)
         // Setzen initial die Document ID auf die gleiche wie der Authuser um eine einfache Verbindung herzustellen
         try userRef.document(authResult.user.uid).setData(from: appUser)
+        
+        // Möchten uns eine ID generieren lassen:
+        // Folgende aufrufe sind identisch
+        // userRef.document().setData(from: appUser)
+        // userRef.addDocument(from: appUser)
     }
 }

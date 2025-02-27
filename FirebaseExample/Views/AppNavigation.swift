@@ -9,18 +9,14 @@ import SwiftUI
 
 struct AppNavigation: View {
     
-    @EnvironmentObject var authViewModel: AuthViewModel
-    
     var body: some View {
-        VStack {
-            if let user = authViewModel.appUser, let userID = user.id {
-                Text(userID)
-                Text(user.email)
-                Text(user.username)
+        TabView {
+            Tab("Chats", systemImage: "bubble") {
+                ChatListView()
             }
             
-            Button("Logout") {
-                authViewModel.logout()
+            Tab("Einstellungen", systemImage: "wrench") {
+                SettingsView()
             }
         }
     }
@@ -28,5 +24,4 @@ struct AppNavigation: View {
 
 #Preview {
     AppNavigation()
-        .environmentObject(AuthViewModel())
 }
