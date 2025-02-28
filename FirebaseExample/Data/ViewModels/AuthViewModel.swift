@@ -16,6 +16,7 @@ class AuthViewModel: ObservableObject {
     @Published var email: String = ""
     @Published var password: String = ""
     @Published var username: String = ""
+    @Published var errorText: String = ""
     @Published var showRegister: Bool = false
     
     var isUserLoggedIn: Bool {
@@ -43,7 +44,11 @@ class AuthViewModel: ObservableObject {
                 // Obsolete durch den listener
                 // self.user = authResult.user
             } catch {
-                print(error)
+                if let fireError = error as? FirebaseError {
+                    errorText = fireError.rawValue
+                } else {
+                    errorText = error.localizedDescription
+                }
             }
         }
     }
@@ -55,8 +60,11 @@ class AuthViewModel: ObservableObject {
                 // Obsolete durch den listener
                 // self.user = authResult.user
             } catch {
-                print(error)
-            }
+                if let fireError = error as? FirebaseError {
+                    errorText = fireError.rawValue
+                } else {
+                    errorText = error.localizedDescription
+                }            }
         }
     }
     
@@ -68,8 +76,11 @@ class AuthViewModel: ObservableObject {
                 // self.user = authResult.user
                 print(authResult.user.uid)
             } catch {
-                print(error)
-            }
+                if let fireError = error as? FirebaseError {
+                    errorText = fireError.rawValue
+                } else {
+                    errorText = error.localizedDescription
+                }            }
         }
     }
     

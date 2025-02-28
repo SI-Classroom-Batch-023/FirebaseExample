@@ -22,7 +22,10 @@ struct SettingsView: View {
             Button("Logout") {
                 settingsViewmodel.logout()
             }
+            .appButtonStyle()
         }
+        .maximize()
+        .background(.siDeepPurple)
     }
 }
 

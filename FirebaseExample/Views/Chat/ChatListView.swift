@@ -20,8 +20,16 @@ struct ChatListView: View {
                     }
                 } label: {
                     Text(chat.name)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding()
+                        .background(.white)
+                        .clipShape(.rect(cornerRadius: 12))
                 }
+                .listRowBackground(Color.clear)
+                .listRowSeparator(.hidden)
             }
+            .listStyle(.plain)
+            .background(.siDeepPurple)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {

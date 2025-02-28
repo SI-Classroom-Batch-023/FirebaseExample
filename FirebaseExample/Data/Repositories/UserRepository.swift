@@ -16,6 +16,16 @@ class UserRepository {
             .getDocument(as: AppUser.self)
     }
     
+    func getUserByUsername(_ username: String) async throws -> AppUser {
+        guard let user = try await userRef
+            .whereField("username", isEqualTo: username)
+            .getDocuments()
+            .documents
+            .first?
+            .data(as: AppUser.self) else { throw FirebaseError.userNotFound }
+        return user
+    }
+    
     // Beispiel für die getUserByID als completion
     private func getUserByID(_ id: String, completion: @escaping (AppUser) -> Void) {
          userRef
@@ -68,6 +78,12 @@ class UserRepository {
     }
     
     func registerUserWithEmail(email: String, password: String, username: String) async throws {
+        if let user = try await userRef
+            .whereField("username", isEqualTo: username)
+            .getDocuments()
+            .documents
+            .first?
+            .data(as: AppUser.self) { throw FirebaseError.usernameAlreadyExists }
         // Holen uns die infos der Registration und vorallem die UID des Authusers
         let authResult = try await firebaseManager.auth.createUser(withEmail: email, password: password)
         let appUser = AppUser(email: email, username: username)

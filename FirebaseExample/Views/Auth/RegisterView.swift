@@ -13,21 +13,33 @@ struct RegisterView: View {
     
     var body: some View {
         
-        TextField("Email", text: $viewModel.email)
-            .appTextFieldStyle()
-        SecureField("Password", text: $viewModel.password)
-            .appTextFieldStyle()
-        
-        TextField("Username", text: $viewModel.username)
-            .appTextFieldStyle()
-        
-        Button("Register Email") {
-            viewModel.registerWithEmail()
+        VStack {
+            TextField("Email", text: $viewModel.email)
+                .appTextFieldStyle()
+            
+            SecureField("Password", text: $viewModel.password)
+                .appTextFieldStyle()
+            
+            TextField("Username", text: $viewModel.username)
+                .appTextFieldStyle()
+            
+            Button("Register Email") {
+                viewModel.registerWithEmail()
+            }
+            .appButtonStyle()
+            .padding(.top, 20)
+            
+            Button("Doch schon einen account?") {
+                viewModel.showRegister.toggle()
+            }
+            .tint(.siYellow)
+            
+            Text(viewModel.errorText)
+                .foregroundStyle(.red)
         }
-        
-        Button("Doch schon einen account?") {
-            viewModel.showRegister.toggle()
-        }
+        .padding(.horizontal)
+        .maximize()
+        .background(.siDeepPurple)
     }
 }
 

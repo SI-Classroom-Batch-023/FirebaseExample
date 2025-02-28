@@ -12,6 +12,8 @@ import FirebaseFirestore
 class MessageViewModel: ObservableObject {
     @Published var messages: [Message] = []
     @Published var messageInput = ""
+    @Published var usernameToAdd = ""
+    @Published var addUserSheetPresented = false
     
     var currentUserID: String? {
         firebaseManager.userID
@@ -19,6 +21,8 @@ class MessageViewModel: ObservableObject {
     
     private var listener: ListenerRegistration?
     private let messageRepository = MessageRepository()
+    private let chatRepository = ChatRepository()
+    private let userRepository = UserRepository()
     private let firebaseManager = FirebaseManager.shared
     private let chatID: String
     
@@ -30,6 +34,7 @@ class MessageViewModel: ObservableObject {
     func sendMessage() {
         guard let id = firebaseManager.userID else { return }
         let message = Message(text: messageInput, senderID: id)
+        messageInput = ""
         do {
             try messageRepository.addMessage(chatID: chatID, message: message)
         } catch {
@@ -41,6 +46,19 @@ class MessageViewModel: ObservableObject {
         listener = messageRepository.addMessageSnapshotListener(chatID: chatID) { [weak self] messages in
             self?.messages = messages.sorted { m1, m2 in
                 m1.timestamp > m2.timestamp
+            }
+        }
+    }
+    
+    func addUserToChat() {
+        Task {
+            do {
+                let user = try await userRepository.getUserByUsername(usernameToAdd)
+                guard let userToAddID = user.id else { return }
+                try await chatRepository.addUserToChat(chatID: chatID, userID: userToAddID)
+                usernameToAdd = ""
+            } catch {
+                print(error)
             }
         }
     }

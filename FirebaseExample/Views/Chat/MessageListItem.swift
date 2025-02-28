@@ -15,26 +15,31 @@ struct MessageListItem: View {
     var body: some View {
         HStack {
             if fromSelf { Spacer() }
-            Text(message.text)
-                .padding()
-                .background(
-                    fromSelf
-                    ? .siPurple
-                    : .siYellow
-                )
-                .clipShape(.rect(
-                    topLeadingRadius: 15,
-                    bottomLeadingRadius: fromSelf ? 15 : 0,
-                    bottomTrailingRadius: fromSelf ? 0 : 15,
-                    topTrailingRadius: 15
-                ))
+            VStack(alignment: fromSelf ? .leading : .trailing) {
+                Text(message.text)
+                Text(message.timestamp.formatted(.dateTime))
+                    .font(.footnote)
+            }
+            .padding()
+            .background(
+                fromSelf
+                ? .siPurple
+                : .siYellow
+            )
+            .clipShape(.rect(
+                topLeadingRadius: 15,
+                bottomLeadingRadius: fromSelf ? 15 : 0,
+                bottomTrailingRadius: fromSelf ? 0 : 15,
+                topTrailingRadius: 15
+            ))
             if !fromSelf { Spacer() }
         }
+        
     }
 }
 
 #Preview {
     MessageListItem(
-        message: Message(text: "HALLO", senderID: "123"), fromSelf: true
+        message: Message(text: "HALLO", senderID: "123"), fromSelf: false
     )
 }

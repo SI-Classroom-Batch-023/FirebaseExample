@@ -41,9 +41,40 @@ struct ChatDetailView: View {
             .background(.siPurple)
         }
         .background(.siDeepPurple)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    messageViewModel.addUserSheetPresented.toggle()
+                } label: {
+                    Image(systemName: "plus")
+                }
+                .tint(.siYellow)
+            }
+        }
+        .sheet(isPresented: $messageViewModel.addUserSheetPresented) {
+            VStack {
+                Text("Gib einen Nutzernamen ein, welchen du zu diesem Chat hinzufügen möchtest!")
+                
+                TextField("Username", text: $messageViewModel.usernameToAdd)
+                    .appTextFieldStyle()
+                
+                Button {
+                    messageViewModel.addUserToChat()
+                } label: {
+                    Text("Nutzer Hinzufügen")
+                }
+                .appButtonStyle()
+            }
+            .padding()
+            .maximize()
+            .background(.siPurple)
+            .presentationDetents([.medium])
+        }
     }
 }
 
 #Preview {
-    ChatDetailView(chatID: "q1VkKnWWDNPIb3AvwbQR")
+    NavigationStack {
+        ChatDetailView(chatID: "q1VkKnWWDNPIb3AvwbQR")
+    }
 }

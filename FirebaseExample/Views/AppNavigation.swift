@@ -9,6 +9,11 @@ import SwiftUI
 
 struct AppNavigation: View {
     
+    init() {
+        UITabBar.appearance().backgroundColor = .siPurple
+        UITabBar.appearance().unselectedItemTintColor = .white
+    }
+    
     var body: some View {
         TabView {
             Tab("Chats", systemImage: "bubble") {
@@ -19,6 +24,7 @@ struct AppNavigation: View {
                 SettingsView()
             }
         }
+        .tint(.siYellow)
     }
 }
 
